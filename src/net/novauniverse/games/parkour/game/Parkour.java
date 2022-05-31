@@ -527,16 +527,7 @@ public class Parkour extends MapGame implements Listener {
 			if (playerActiveCheckpoint.containsKey(player.getUniqueId())) {
 				location = playerActiveCheckpoint.get(player.getUniqueId()).getSpawnLocation();
 			}
-
-			final Location fLocation = location;
-
-			player.teleport(map.getSpawnLocation(), TeleportCause.PLUGIN);
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					player.teleport(fLocation, TeleportCause.PLUGIN);
-				}
-			}.runTaskLater(NovaParkour.getInstance(), 1L);
+			player.teleport(location, TeleportCause.PLUGIN);
 		} else {
 			PlayerUtils.resetMaxHealth(player);
 
