@@ -1,0 +1,6 @@
+name: Parkour
+main: net.novauniverse.games.parkour.NovaParkour
+description: Novauniverse Parkour
+version: 1.0
+depend: [NovaCore, NovaCoreGameEngine]
+softdepend: [NovaGamesTarget]
