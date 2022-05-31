@@ -580,12 +580,9 @@ public class Parkour extends MapGame implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent e) {
-		Player player = e.getPlayer();
 		if (started) {
+			Player player = e.getPlayer();
 			this.teleportPlayer(player);
-		} else {
-			player.sendMessage(ChatColor.GREEN + "For the best experience turn off clouds");
-			VersionIndependantUtils.get().sendTitle(player, "", ChatColor.GREEN + "For the best experience turn off clouds", 10, 100, 20);
 		}
 	}
 
