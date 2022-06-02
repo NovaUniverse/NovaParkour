@@ -16,6 +16,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -34,10 +35,12 @@ import net.novauniverse.games.parkour.NovaParkour;
 import net.novauniverse.games.parkour.game.config.ParkourCheckpoint;
 import net.novauniverse.games.parkour.game.config.ParkourConfig;
 import net.novauniverse.games.parkour.game.config.ParkourMap;
+import net.novauniverse.games.parkour.game.config.TeleporterConfig;
 import net.novauniverse.games.parkour.game.event.ParkourEvent;
 import net.novauniverse.games.parkour.game.event.ParkourPlacementEvent;
 import net.novauniverse.games.parkour.game.event.ParkourPlayerCompleteRoundEvent;
 import net.novauniverse.games.parkour.game.event.ParkourPlayerFailRoundEvent;
+import net.novauniverse.games.parkour.game.event.ParkourPlayerReachTeleporterEvent;
 import net.novauniverse.games.parkour.game.event.ParkourRoundEndEvent;
 import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
@@ -167,11 +170,20 @@ public class Parkour extends MapGame implements Listener {
 					 */
 
 					if (timeLeft > 0) {
-						// Checkpoints
+						// Checkpoints and teleporters
 						if (hasActiveMap()) {
 							Bukkit.getServer().getOnlinePlayers().forEach(player -> {
 								if (isPlayerInGame(player)) {
 									if (player.getGameMode() != GameMode.SPECTATOR) {
+										// Teleporters
+										TeleporterConfig teleporter = map.getTeleporters().stream().filter(t -> t.getActivationArea().isInsideBlock(player.getLocation().toVector())).findFirst().orElse(null);
+										if (teleporter != null) {
+											Event event = new ParkourPlayerReachTeleporterEvent(teleporter, player);
+											Bukkit.getServer().getPluginManager().callEvent(event);
+											player.teleport(teleporter.getTargetLocation(), TeleportCause.PLUGIN);
+										}
+
+										// Checkpoint
 										ParkourCheckpoint checkpoint = map.getCheckpoints().stream().filter(c -> c.getUnlockArea().isInsideBlock(player.getLocation().toVector())).findFirst().orElse(null);
 										if (checkpoint != null) {
 											boolean isNew = false;
@@ -179,14 +191,31 @@ public class Parkour extends MapGame implements Listener {
 												if (playerActiveCheckpoint.get(player.getUniqueId()).getValue() < checkpoint.getValue()) {
 													isNew = true;
 												}
-												;
 											} else {
 												isNew = true;
 											}
 
 											if (isNew) {
-												VersionIndependantUtils.get().sendTitle(player, ChatColor.GREEN + "Checkpoint", "", 10, 20, 10);
-												player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Reached checkpoint");
+												if (!checkpoint.isNoMessage()) {
+													String message = ChatColor.GREEN + "" + ChatColor.BOLD + "Reached checkpoint";
+													String title = ChatColor.GREEN + "Checkpoint";
+
+													if (checkpoint.getMessage() != null) {
+														message = checkpoint.getMessage();
+													}
+
+													if (checkpoint.getTitle() != null) {
+														title = checkpoint.getTitle();
+													}
+
+													if (message.length() > 0) {
+														player.sendMessage(message);
+													}
+
+													if (title.length() > 0) {
+														VersionIndependantUtils.get().sendTitle(player, title, "", 10, 20, 10);
+													}
+												}
 												playerActiveCheckpoint.put(player.getUniqueId(), checkpoint);
 											}
 										}
@@ -208,7 +237,7 @@ public class Parkour extends MapGame implements Listener {
 							}
 						});
 
-						// Remove cpompleted players
+						// Remove completed players
 						toRemove.forEach(uuid -> {
 							Player player = Bukkit.getServer().getPlayer(uuid);
 							remainingPlayers.remove(uuid);
@@ -337,7 +366,7 @@ public class Parkour extends MapGame implements Listener {
 		config = (ParkourConfig) this.getActiveMap().getMapData().getMapModule(ParkourConfig.class);
 		if (config == null) {
 			Bukkit.getServer().broadcastMessage(ChatColor.DARK_RED + "Failed to start: Configuration error");
-			Log.fatal("Parkour", "Failed to start. Missing map module dropper.config");
+			Log.fatal("Parkour", "Failed to start. Missing map module parkour.config");
 			return;
 		}
 
@@ -476,7 +505,13 @@ public class Parkour extends MapGame implements Listener {
 		remainingPlayers.clear();
 
 		if (maps.size() <= 1) {
-			Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Game Over. No more rounds remaining");
+			if(config.getCustomGameOverMessage() != null) {
+				if(config.getCustomGameOverMessage().length() > 0) {
+					Bukkit.getServer().broadcastMessage(config.getCustomGameOverMessage());
+				}
+			} else {
+				Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Game Over. No more rounds remaining");	
+			}
 			this.endGame(GameEndReason.ALL_FINISHED);
 			return;
 		}

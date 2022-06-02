@@ -19,8 +19,9 @@ public class ParkourMap {
 	private boolean nightVision;
 
 	private List<ParkourCheckpoint> checkpoints;
+	private List<TeleporterConfig> teleporters;
 
-	public ParkourMap(VectorArea completeArea, Location spawnLocation, Location spectatorLocation, int health, int time, boolean nightVision, List<ParkourCheckpoint> checkpoints) {
+	public ParkourMap(VectorArea completeArea, Location spawnLocation, Location spectatorLocation, int health, int time, boolean nightVision, List<ParkourCheckpoint> checkpoints, List<TeleporterConfig> teleporters) {
 		this.completeArea = completeArea;
 		this.spawnLocation = spawnLocation;
 		this.spectatorLocation = spectatorLocation;
@@ -28,12 +29,14 @@ public class ParkourMap {
 		this.time = time;
 		this.nightVision = nightVision;
 		this.checkpoints = checkpoints;
+		this.teleporters = teleporters;
 	}
 
 	public void setupWorld(World world) {
 		this.spawnLocation = new Location(world, this.spawnLocation.getX(), this.spawnLocation.getY(), this.spawnLocation.getZ(), this.spawnLocation.getYaw(), this.spawnLocation.getPitch());
 		this.spectatorLocation = new Location(world, this.spectatorLocation.getX(), this.spectatorLocation.getY(), this.spectatorLocation.getZ(), this.spectatorLocation.getYaw(), this.spectatorLocation.getPitch());
 		this.checkpoints.forEach(checkpoint -> checkpoint.setupWorld(world));
+		this.teleporters.forEach(teleporter -> teleporter.setupWorld(world));
 	}
 
 	public VectorArea getCompleteArea() {
@@ -62,5 +65,9 @@ public class ParkourMap {
 
 	public List<ParkourCheckpoint> getCheckpoints() {
 		return checkpoints;
+	}
+	
+	public List<TeleporterConfig> getTeleporters() {
+		return teleporters;
 	}
 }

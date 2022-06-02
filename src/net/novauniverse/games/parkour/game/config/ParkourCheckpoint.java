@@ -9,11 +9,17 @@ public class ParkourCheckpoint {
 	private VectorArea unlockArea;
 	private int value;
 	private Location spawnLocation;
+	private boolean noMessage;
+	private String message;
+	private String title;
 
-	public ParkourCheckpoint(VectorArea unlockArea, int value, Location spawnLocation) {
+	public ParkourCheckpoint(VectorArea unlockArea, int value, Location spawnLocation, boolean noMessage, String message, String title) {
 		this.unlockArea = unlockArea;
 		this.value = value;
 		this.spawnLocation = spawnLocation;
+		this.noMessage = noMessage;
+		this.message = message;
+		this.title = title;
 	}
 
 	public void setupWorld(World world) {
@@ -30,5 +36,17 @@ public class ParkourCheckpoint {
 
 	public int getValue() {
 		return value;
+	}
+
+	public boolean isNoMessage() {
+		return noMessage;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 }
