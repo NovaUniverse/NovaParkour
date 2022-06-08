@@ -46,9 +46,9 @@ import net.zeeraa.novacore.commons.log.Log;
 import net.zeeraa.novacore.commons.tasks.Task;
 import net.zeeraa.novacore.commons.utils.TextUtils;
 import net.zeeraa.novacore.spigot.NovaCore;
-import net.zeeraa.novacore.spigot.abstraction.VersionIndependantUtils;
+import net.zeeraa.novacore.spigot.abstraction.VersionIndependentUtils;
 import net.zeeraa.novacore.spigot.abstraction.enums.NovaCoreGameVersion;
-import net.zeeraa.novacore.spigot.abstraction.enums.VersionIndependantSound;
+import net.zeeraa.novacore.spigot.abstraction.enums.VersionIndependentSound;
 import net.zeeraa.novacore.spigot.gameengine.module.modules.game.GameEndReason;
 import net.zeeraa.novacore.spigot.gameengine.module.modules.game.MapGame;
 import net.zeeraa.novacore.spigot.gameengine.module.modules.game.elimination.PlayerEliminationReason;
@@ -111,8 +111,8 @@ public class Parkour extends MapGame implements Listener {
 
 							Player player = Bukkit.getServer().getPlayer(uuid);
 							if (player != null) {
-								VersionIndependantSound.WITHER_HURT.play(player);
-								VersionIndependantUtils.get().sendTitle(player, ChatColor.RED + "Failed", ChatColor.RED + "time's up", 10, 60, 10);
+								VersionIndependentSound.WITHER_HURT.play(player);
+								VersionIndependentUtils.get().sendTitle(player, ChatColor.RED + "Failed", ChatColor.RED + "time's up", 10, 60, 10);
 							}
 						});
 
@@ -213,7 +213,7 @@ public class Parkour extends MapGame implements Listener {
 													}
 
 													if (title.length() > 0) {
-														VersionIndependantUtils.get().sendTitle(player, title, "", 10, 20, 10);
+														VersionIndependentUtils.get().sendTitle(player, title, "", 10, 20, 10);
 													}
 												}
 												playerActiveCheckpoint.put(player.getUniqueId(), checkpoint);
@@ -272,8 +272,8 @@ public class Parkour extends MapGame implements Listener {
 							}
 
 							teleportPlayer(player);
-							VersionIndependantSound.ORB_PICKUP.play(player);
-							VersionIndependantUtils.get().sendTitle(player, ChatColor.GREEN + "Completed", ChatColor.GREEN + TextUtils.ordinal(placement) + " place", 10, 60, 10);
+							VersionIndependentSound.ORB_PICKUP.play(player);
+							VersionIndependentUtils.get().sendTitle(player, ChatColor.GREEN + "Completed", ChatColor.GREEN + TextUtils.ordinal(placement) + " place", 10, 60, 10);
 						});
 
 						// End the game
